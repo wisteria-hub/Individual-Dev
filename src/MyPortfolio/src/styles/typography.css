@@ -1,0 +1,46 @@
+/* タイポグラフィスケール（白黒デザインはウェイトと余白で階層を作る） */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.eyebrow {
+  font-family: var(--font-head);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

@@ -1,0 +1,77 @@
+/* =========================================================
+   デザイントークン（白黒基調・モノクロ）
+   ライト/ダークは [data-theme] 属性で切替（useTheme が付与）
+   ========================================================= */
+:root {
+  /* --- カラー（ライト） --- */
+  --color-bg: #ffffff;
+  --color-bg-elev: #f5f5f5;      /* カード等の一段持ち上げた面 */
+  --color-bg-inverse: #0a0a0a;
+  --color-text: #0a0a0a;
+  --color-text-inverse: #f5f5f5;
+  --color-muted: #6b6b6b;        /* 補助テキスト */
+  --color-faint: #9a9a9a;        /* さらに薄い */
+  --color-border: #e5e5e5;
+  --color-border-strong: #cfcfcf;
+
+  /* 半透明（ヘッダーの磨りガラス等） */
+  --color-glass: rgba(255, 255, 255, 0.72);
+  --color-overlay: rgba(10, 10, 10, 0.6);
+  --shadow-color: rgba(10, 10, 10, 0.12);
+
+  /* --- スペーシング --- */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+  --section-pad-y: clamp(4rem, 10vw, 9rem);
+
+  /* --- レイアウト --- */
+  --content-max: 1120px;
+  --content-pad-x: clamp(1.25rem, 5vw, 4rem);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* --- タイポ（フォントファミリー） --- */
+  --font-head: 'Sora', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* フルーイドタイポ */
+  --fs-hero: clamp(2.75rem, 8vw + 0.5rem, 6.5rem);
+  --fs-h2: clamp(2rem, 4vw + 0.5rem, 3.5rem);
+  --fs-h3: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
+  --fs-lead: clamp(1.05rem, 1vw + 0.75rem, 1.35rem);
+  --fs-body: 1rem;
+  --fs-small: 0.85rem;
+
+  /* --- モーション --- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 0.2s;
+  --dur-med: 0.4s;
+  --dur-slow: 0.7s;
+
+  --header-h: 72px;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0a0a0a;
+  --color-bg-elev: #161616;
+  --color-bg-inverse: #ffffff;
+  --color-text: #f5f5f5;
+  --color-text-inverse: #0a0a0a;
+  --color-muted: #a3a3a3;
+  --color-faint: #6b6b6b;
+  --color-border: #262626;
+  --color-border-strong: #3a3a3a;
+
+  --color-glass: rgba(10, 10, 10, 0.66);
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}

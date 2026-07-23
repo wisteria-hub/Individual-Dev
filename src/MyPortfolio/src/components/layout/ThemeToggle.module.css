@@ -1,0 +1,22 @@
+.toggle {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-bg);
+  font-size: 1.15rem;
+  color: var(--color-text);
+  transition: border-color var(--dur-fast) var(--ease-out);
+  overflow: hidden;
+}
+
+.toggle:hover {
+  border-color: var(--color-text);
+}
+
+.iconWrap {
+  display: grid;
+  place-items: center;
+}

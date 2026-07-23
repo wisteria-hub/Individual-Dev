@@ -1,0 +1,118 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.para {
+  color: var(--color-muted);
+  max-width: 46ch;
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-head);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 5vw, 3rem);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statSuffix {
+  font-size: 0.5em;
+  margin-left: 0.1em;
+  color: var(--color-muted);
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.4rem;
+}
+
+/* ---------- プロフィールカード ---------- */
+.cardWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-elev);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  transform-style: preserve-3d;
+  box-shadow: 0 20px 50px var(--shadow-color);
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 3.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cardName {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.cardRole {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .cardWrap {
+    order: -1;
+  }
+}

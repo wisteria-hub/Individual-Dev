@@ -1,0 +1,21 @@
+.section {
+  padding-block: var(--section-pad-y);
+  position: relative;
+}
+
+.wide {
+  width: 100%;
+}
+
+.head {
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  max-width: 720px;
+}
+
+.head .eyebrow {
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  margin-top: 0.25rem;
+}
