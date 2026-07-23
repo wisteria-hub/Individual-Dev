@@ -260,6 +260,11 @@
   .tick-line { stroke: var(--tick); }
   .tick-line.major { stroke: var(--tick-strong); }
   .hour-num { fill: var(--text-sub); font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+  /* 0時＝1日の境界を強調する「継ぎ目」マーク */
+  .day-seam { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 3 3; opacity: .85; }
+  .day-seam-label { fill: var(--accent); font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+  /* 日またぎ予定の継続方向を示す小さな矢印（›＝翌日へ／‹＝前日から） */
+  .wrap-chevron { font-size: 15px; font-weight: 900; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
   .now-hand { stroke: var(--now); stroke-width: 2.5; stroke-linecap: round; transition: transform .8s cubic-bezier(.4,0,.2,1); transform-box: view-box; }
   .now-dot { fill: var(--now); }
   /* リサイズ可能時に表示する端のガイド線（放射状） */
@@ -268,7 +273,33 @@
   .clock-center-sub { fill: var(--text-sub); font-size: 10px; text-anchor: middle; letter-spacing:2px; }
 
   /* ---- 予定リスト ---- */
-  .list-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .list-head { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+
+  /* ---- テンプレート ポップオーバー ---- */
+  .tpl-popover {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 10px; display: none; flex-direction: column;
+  }
+  .tpl-popover.open { display: flex; animation: pop .2s cubic-bezier(.2,.9,.3,1.2); }
+  .tpl-popover-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
+  .tpl-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .tpl-chip {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px;
+    background: var(--panel-2); border: 1px solid var(--border); cursor: pointer;
+    transition: transform .12s ease, box-shadow .2s ease;
+  }
+  .tpl-chip:hover { transform: translateX(2px); box-shadow: var(--shadow-sm); }
+  .tpl-sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .tpl-star { flex: none; font-size: 11px; color: var(--accent); }
+  .tpl-title { font-weight: 700; font-size: 13px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tpl-time { font-size: 11px; color: var(--text-sub); white-space: nowrap; }
+  .tpl-del {
+    border: none; background: transparent; color: var(--text-sub); font-size: 16px; line-height: 1;
+    cursor: pointer; padding: 0 2px; flex: none;
+  }
+  .tpl-del:hover { color: #ff5a5a; }
+  .tpl-empty { color: var(--text-sub); font-size: 12px; text-align: center; padding: 14px; }
   .entries { overflow-y: auto; flex: 1; margin: -4px; padding: 4px; }
   .entry {
     display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
@@ -311,6 +342,36 @@
   .tl-seg.res-end::after { opacity: .95; }
   .tl-now { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--now); z-index: 5; }
   .tl-now::after { content:''; position:absolute; top:-4px; left:-3px; width:8px; height:8px; border-radius:50%; background:var(--now); }
+  /* 0時／24時＝1日の境界を強調する「継ぎ目」マーク */
+  .tl-boundary { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--accent); opacity: .55; pointer-events: none; }
+  .tl-scale span.seam { font-weight: 700; color: var(--accent); }
+
+  /* ---- タイムライン下部：本体＋内訳サマリーの横並び ---- */
+  .tl-body { display: flex; gap: 16px; align-items: flex-start; }
+  .tl-main { flex: 1; min-width: 0; }
+  .tl-summary {
+    width: 230px; flex: none; border-left: 1px solid var(--border); padding-left: 16px;
+  }
+  .tl-summary h2 { margin: 0 0 8px; }
+  .summary-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .seg-control { display: flex; gap: 3px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+  .seg-control button {
+    border: none; background: transparent; padding: 4px 10px; border-radius: 6px; font-size: 12px;
+    font-family: inherit; color: var(--text-sub); cursor: pointer; transition: background .15s ease, color .15s ease;
+  }
+  .seg-control button.active { background: var(--accent); color: #fff; }
+  .summary-range { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
+  .summary-bar {
+    display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--panel-2);
+    border: 1px solid var(--border); margin-bottom: 10px;
+  }
+  .summary-bar-seg { height: 100%; animation: fade .3s ease both; }
+  .summary-list { max-height: 130px; overflow-y: auto; }
+  .summary-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; animation: slideIn .3s ease both; }
+  .summary-row .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .summary-row .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .summary-row .val { color: var(--text-sub); white-space: nowrap; font-size: 11px; }
+  .summary-empty { color: var(--text-sub); font-size: 12px; padding: 10px 2px; line-height: 1.6; }
 
   /* ---- モーダル ---- */
   .overlay {
@@ -376,6 +437,8 @@
     .app { height: auto; min-height: 100vh; }
     .main { grid-template-columns: 1fr; }
     .clock-wrap { max-width: 360px; margin: 0 auto; }
+    .tl-body { flex-direction: column; }
+    .tl-summary { width: 100%; border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 12px; }
   }
 </style>
 </head>
@@ -431,9 +494,19 @@
 
     <!-- 予定リスト -->
     <section class="panel">
-      <div class="list-head">
+      <div class="list-head" id="listHead">
         <h2 style="margin:0;">その日の予定</h2>
-        <button class="btn primary" id="btnAdd">＋ 予定を追加</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" id="btnTemplates">📋 テンプレート</button>
+          <button class="btn primary" id="btnAdd">＋ 予定を追加</button>
+        </div>
+        <div class="tpl-popover" id="tplPopover">
+          <div class="tpl-popover-head">
+            <span>テンプレートから追加</span>
+            <span>クリックで即追加</span>
+          </div>
+          <div class="tpl-list" id="tplList"></div>
+        </div>
       </div>
       <div class="entries" id="entries"></div>
       <div class="total-bar" id="totalBar"></div>
@@ -443,8 +516,25 @@
   <!-- ===== タイムライン ===== -->
   <section class="panel timeline-panel">
     <h2>24時間タイムライン<span style="font-weight:400;color:var(--text-sub);"> ／ 中央ドラッグで移動・両端ドラッグで長さ変更（時計も同様）</span></h2>
-    <div class="tl-scale" id="tlScale"></div>
-    <div class="tl-track" id="tlTrack"></div>
+    <div class="tl-body">
+      <div class="tl-main">
+        <div class="tl-scale" id="tlScale"></div>
+        <div class="tl-track" id="tlTrack"></div>
+      </div>
+      <div class="tl-summary">
+        <div class="summary-head">
+          <h2>内訳</h2>
+          <div class="seg-control" id="summarySeg">
+            <button data-p="day" class="active">日</button>
+            <button data-p="week">週</button>
+            <button data-p="month">月</button>
+          </div>
+        </div>
+        <div class="summary-range" id="summaryRange"></div>
+        <div class="summary-bar" id="summaryBar"></div>
+        <div class="summary-list" id="summaryList"></div>
+      </div>
+    </div>
   </section>
 </div>
 
@@ -475,6 +565,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn danger" id="btnDelete" style="display:none;">削除</button>
+      <button class="btn" id="btnSaveTpl" title="この内容をテンプレートとして保存">☆ テンプレート化</button>
       <div class="spacer"></div>
       <button class="btn" id="btnCancel">キャンセル</button>
       <button class="btn primary" id="btnSave">保存</button>
@@ -494,9 +585,23 @@
   // ============================================================
   var STORE_KEY = "dayTimeSchedule.v1";
   var THEME_KEY = "dayTimeSchedule.theme";
+  var TEMPLATE_KEY = "dayTimeSchedule.templates";
   var DOW = ["日", "月", "火", "水", "木", "金", "土"];
   var PALETTE = ["#4f8cff", "#37c8a6", "#ffb020", "#ff6b6b", "#a06bff",
                  "#ff8fab", "#5ac8fa", "#8bc34a", "#ff7043", "#78909c"];
+
+  // おすすめテンプレート（プリセット・削除不可）。ユーザー作成分と結合して表示する。
+  var PRESET_TEMPLATES = [
+    { id: "p-sleep",   title: "睡眠", start: "23:00", end: "07:00", color: "#a06bff", preset: true },
+    { id: "p-breakfast", title: "朝食", start: "07:00", end: "07:30", color: "#ffb020", preset: true },
+    { id: "p-commute", title: "通勤", start: "08:00", end: "09:00", color: "#78909c", preset: true },
+    { id: "p-work",    title: "仕事", start: "09:00", end: "18:00", color: "#4f8cff", preset: true },
+    { id: "p-lunch",   title: "昼食", start: "12:00", end: "13:00", color: "#ffb020", preset: true },
+    { id: "p-exercise", title: "運動", start: "18:30", end: "19:30", color: "#37c8a6", preset: true },
+    { id: "p-dinner",  title: "夕食", start: "19:30", end: "20:30", color: "#ffb020", preset: true },
+    { id: "p-bath",    title: "入浴", start: "21:00", end: "21:30", color: "#5ac8fa", preset: true },
+    { id: "p-reading", title: "読書", start: "22:00", end: "23:00", color: "#ff8fab", preset: true }
+  ];
 
   var data = loadData();               // { "YYYY-MM-DD": [ {id,title,start,end,color,note} ] }
   var selectedDate = ymd(new Date());  // 選択中の日付キー
@@ -506,6 +611,8 @@
   var editingDate = null;              // 編集中の予定が属する日付キー（日またぎ対応）
   var pickedColor = PALETTE[0];
   var dragMoved = false;               // 直前の操作がドラッグ移動だったか（クリック誤爆防止）
+  var summaryPeriod = "day";           // 内訳集計の期間："day" / "week" / "month"
+  var userTemplates = loadTemplates(); // ユーザー作成テンプレート
 
   // ============================================================
   // ストレージ
@@ -525,6 +632,17 @@
     list.sort(function (a, b) { return toMin(a.start) - toMin(b.start); });
     return list;
   }
+  function loadTemplates() {
+    try {
+      var raw = localStorage.getItem(TEMPLATE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveTemplates() {
+    try { localStorage.setItem(TEMPLATE_KEY, JSON.stringify(userTemplates)); }
+    catch (e) { toast("テンプレートの保存に失敗しました"); }
+  }
+  function allTemplates() { return PRESET_TEMPLATES.concat(userTemplates); }
 
   // ============================================================
   // 時刻ユーティリティ
@@ -599,6 +717,7 @@
     renderClock();
     renderList();
     renderTimeline();
+    renderSummary();
   }
 
   // ---- カレンダー ----
@@ -678,8 +797,8 @@
     circle(svg, CX, CY, R_OUT + 26, "var(--clock-ring)", null);
     circle(svg, CX, CY, R_OUT + 10, "var(--clock-face)", null);
 
-    // 目盛り（24本）と数字（3時間ごと）
-    for (var h = 0; h < 24; h++) {
+    // 目盛り（24本）と数字（3時間ごと）／ 0時は「1日の境界」として別途強調する
+    for (var h = 1; h < 24; h++) {
       var deg = (h / 24) * 360;
       var major = (h % 3 === 0);
       var o = polar(CX, CY, R_OUT + 8, deg);
@@ -696,6 +815,17 @@
         svg.appendChild(t);
       }
     }
+    // 0時（＝1日の継ぎ目）：破線＋専用ラベルで目立たせる
+    var seamOuter = polar(CX, CY, R_OUT + 26, 0);
+    var seamInner = polar(CX, CY, R_OUT - 8, 0);
+    var seamLine = el("line", { x1: seamInner.x, y1: seamInner.y, x2: seamOuter.x, y2: seamOuter.y });
+    seamLine.setAttribute("class", "day-seam");
+    svg.appendChild(seamLine);
+    var seamLabelPos = polar(CX, CY, R_OUT + 22, 0);
+    var seamLabel = el("text", { x: seamLabelPos.x, y: seamLabelPos.y });
+    seamLabel.setAttribute("class", "day-seam-label");
+    seamLabel.textContent = "0:00";
+    svg.appendChild(seamLabel);
 
     // 予定アーク
     var segs = getDaySegments(selectedDate);
@@ -708,13 +838,19 @@
       if (r < 40) r = 40;
       var span = it.en - it.s;
       if (span <= 0) return;
-      var path = el("path", { d: arcPath(CX, CY, r, it.s, it.en) });
+
+      // 日またぎの継ぎ目側は少し手前で止め、隙間を作って矢印を添える
+      // （同色の予定が0時をまたいで前日／翌日に別々に存在しても、繋がって見えないようにする）
+      var drawS = it.s, drawE = it.en;
+      if (it.part === "head") drawE = it.en - Math.max(0, Math.min(10, span * 0.25));
+      else if (it.part === "tail") drawS = it.s + Math.max(0, Math.min(10, span * 0.25));
+
+      var path = el("path", { d: arcPath(CX, CY, r, drawS, drawE) });
       path.setAttribute("class", "arc");
       path.setAttribute("stroke", it.entry.color);
       path.setAttribute("stroke-width", 14);
       path.setAttribute("data-id", it.entry.id);
-      // 端点を丸めるか（当日内で完結する側のみ丸く、切れる側は角に）
-      path.setAttribute("stroke-linecap", it.part === "full" ? "round" : "butt");
+      path.setAttribute("stroke-linecap", "round");
       svg.appendChild(path);
       // 描画アニメ
       try {
@@ -729,6 +865,17 @@
         attachDragClock(path, it);
         path.addEventListener("click", function () { if (dragMoved) { dragMoved = false; return; } openModal(it.entry, it.owner); });
       })(it);
+
+      // 継続方向の小さな矢印（›＝翌日へ続く／‹＝前日から続く）
+      if (it.part === "head" || it.part === "tail") {
+        var chevAngle = it.part === "head" ? angleFor(drawE) : angleFor(drawS);
+        var cp = polar(CX, CY, r, chevAngle);
+        var chev = el("text", { x: cp.x, y: cp.y });
+        chev.setAttribute("class", "wrap-chevron");
+        chev.setAttribute("fill", it.entry.color);
+        chev.textContent = it.part === "head" ? "›" : "‹";
+        svg.appendChild(chev);
+      }
     });
 
     // 中央：現在時刻 or 選択日の記録時間
@@ -817,7 +964,9 @@
     for (var h = 0; h <= 24; h += 3) {
       var s = document.createElement("span");
       s.style.left = (h / 24 * 100) + "%";
-      s.textContent = h;
+      var isSeam = (h === 0 || h === 24);
+      if (isSeam) s.className = "seam";
+      s.textContent = isSeam ? h + ":00" : h;
       scale.appendChild(s);
     }
 
@@ -835,11 +984,18 @@
       if (g % 3 !== 0) gl.style.opacity = ".5";
       track.appendChild(gl);
     }
+    // 0時／24時＝1日の境界（継ぎ目）を強調する破線（予定の帯より下に配置）
+    [0, 1440].forEach(function (m) {
+      var bl = document.createElement("div");
+      bl.className = "tl-boundary";
+      bl.style.left = (m / 1440 * 100) + "%";
+      track.appendChild(bl);
+    });
 
     laid.items.forEach(function (it) {
       var e = it.entry;
       var seg = document.createElement("div");
-      seg.className = "tl-seg";
+      seg.className = "tl-seg" + (it.part === "head" ? " res-start" : it.part === "tail" ? " res-end" : "");
       seg.style.left = (it.s / 1440 * 100) + "%";
       seg.style.width = ((it.en - it.s) / 1440 * 100) + "%";
       seg.style.top = (6 + it.lane * (rowH + gap)) + "px";
@@ -867,6 +1023,96 @@
     }
   }
 
+  // ============================================================
+  // 内訳サマリー（色＝カテゴリとして期間集計）
+  // ============================================================
+  function startOfWeek(d) { var x = new Date(d); x.setDate(x.getDate() - x.getDay()); return x; }
+
+  function keysInRange(period) {
+    var base = parseKey(selectedDate);
+    var keys = [];
+    if (period === "week") {
+      var start = startOfWeek(base);
+      for (var i = 0; i < 7; i++) keys.push(ymd(addDays(start, i)));
+    } else if (period === "month") {
+      var y = base.getFullYear(), m = base.getMonth();
+      var lastDate = new Date(y, m + 1, 0).getDate();
+      for (var d = 1; d <= lastDate; d++) keys.push(ymd(new Date(y, m, d)));
+    } else {
+      keys.push(selectedDate);
+    }
+    return keys;
+  }
+
+  function rangeLabelFor(period) {
+    var base = parseKey(selectedDate);
+    if (period === "week") {
+      var start = startOfWeek(base), end = addDays(start, 6);
+      return (start.getMonth() + 1) + "/" + start.getDate() + " 〜 " + (end.getMonth() + 1) + "/" + end.getDate();
+    }
+    if (period === "month") return base.getFullYear() + "年" + (base.getMonth() + 1) + "月";
+    return base.getMonth() + 1 + "/" + base.getDate() + "（" + DOW[base.getDay()] + "）";
+  }
+
+  // 色ごとに合計時間を集計。ラベルは、その色でもっとも多く使われたタイトルを採用。
+  function computeSummary(period) {
+    var byColor = {};
+    keysInRange(period).forEach(function (key) {
+      (data[key] || []).forEach(function (e) {
+        var mins = fullDur(e);
+        if (mins <= 0) return;
+        if (!byColor[e.color]) byColor[e.color] = { mins: 0, titles: {} };
+        byColor[e.color].mins += mins;
+        var t = e.title || "(無題)";
+        byColor[e.color].titles[t] = (byColor[e.color].titles[t] || 0) + 1;
+      });
+    });
+    var rows = Object.keys(byColor).map(function (c) {
+      var info = byColor[c];
+      var label = Object.keys(info.titles).sort(function (a, b) { return info.titles[b] - info.titles[a]; })[0];
+      return { color: c, label: label, mins: info.mins };
+    });
+    rows.sort(function (a, b) { return b.mins - a.mins; });
+    var total = rows.reduce(function (a, r) { return a + r.mins; }, 0);
+    return { rows: rows, total: total };
+  }
+
+  function renderSummary() {
+    document.getElementById("summaryRange").textContent = rangeLabelFor(summaryPeriod);
+    var res = computeSummary(summaryPeriod);
+    var bar = document.getElementById("summaryBar");
+    var list = document.getElementById("summaryList");
+    bar.innerHTML = ""; list.innerHTML = "";
+
+    if (!res.rows.length || res.total === 0) {
+      bar.style.display = "none";
+      list.innerHTML = '<div class="summary-empty">この期間の記録がありません。</div>';
+      return;
+    }
+    bar.style.display = "flex";
+    res.rows.forEach(function (r, i) {
+      var pct = res.total ? (r.mins / res.total * 100) : 0;
+
+      var seg = document.createElement("div");
+      seg.className = "summary-bar-seg";
+      seg.style.width = pct + "%";
+      seg.style.background = r.color;
+      seg.style.animationDelay = (i * 0.05) + "s";
+      seg.title = r.label + "  " + durText(r.mins);
+      bar.appendChild(seg);
+
+      var row = document.createElement("div");
+      row.className = "summary-row";
+      row.style.animationDelay = (i * 0.05) + "s";
+      row.innerHTML =
+        '<div class="sw" style="background:' + r.color + '"></div>' +
+        '<div class="lbl"></div>' +
+        '<div class="val">' + durText(r.mins) + "（" + Math.round(pct) + "%）" + '</div>';
+      row.querySelector(".lbl").textContent = r.label;
+      list.appendChild(row);
+    });
+  }
+
   // ---- ホバー連動ハイライト ----
   function bindHover(elm, id) {
     elm.addEventListener("mouseenter", function () { highlight(id, true); });
@@ -883,14 +1129,16 @@
 
   // ============================================================
   // ドラッグ操作（時計アーク / タイムライン帯）
-  //   当日内で完結する予定（full）のみ対象。5分刻みでスナップ。
-  //   中央=移動（所要時間を保持）／ 両端=長さ変更（伸縮）
+  //   5分刻みでスナップ。当日内完結（full）＝中央で移動・両端で長さ変更。
+  //   日をまたぐ予定（head/tail）＝実体のある側の端のみ、長さ変更に対応。
   // ============================================================
   function commitEntry(e, ns, ne, label) {
     e.start = fmtHHMM(ns); e.end = fmtHHMM(ne);
-    saveData(); renderAll(); toast(label + " → " + e.start + " 〜 " + e.end + "（" + durText(ne - ns) + "）");
+    saveData(); renderAll();
+    toast(label + " → " + e.start + " 〜 " + e.end + "（" + durText(fullDur(e)) + "）");
   }
   function circDist(a, b) { var d = Math.abs(a - b) % 1440; return Math.min(d, 1440 - d); }
+  function wrapAwareDur(s, e) { return (e <= s) ? (1440 - s) + e : (e - s); }
 
   // 移動/変更中に、時刻を大きく表示する追従ツールチップ
   function showTip(x, y, text) {
@@ -919,9 +1167,58 @@
     if (g) g.style.opacity = "0";
   }
 
+  // 日またぎセグメント（head/tail）：実体のある側の端だけを長さ変更できるようにする。
+  // head＝当日の開始側が本物の start、末尾は深夜0時の境界（見た目だけ）なので start のみ編集可。
+  // tail＝翌日の終了側が本物の end、先頭は深夜0時の境界なので end のみ編集可。
+  function attachWrapResizeTimeline(seg, it, edge) {
+    seg.addEventListener("pointerdown", function (ev) {
+      ev.preventDefault();
+      dragMoved = false;
+      var track = document.getElementById("tlTrack");
+      var wTrack = track.getBoundingClientRect().width;
+      var e = it.entry, origStart = toMin(e.start), origEnd = toMin(e.end);
+      var sx = ev.clientX, moved = false, ns = origStart, ne = origEnd;
+      var topY = seg.getBoundingClientRect().top;
+      try { seg.setPointerCapture(ev.pointerId); } catch (x) {}
+      seg.style.transition = "none"; seg.style.zIndex = 20;
+      function mv(m) {
+        if (Math.abs(m.clientX - sx) > 3) moved = true;
+        var d = Math.round(((m.clientX - sx) / wTrack * 1440) / 5) * 5;
+        if (edge === "start") {
+          var maxStart = Math.min(1439, 1435 + origEnd);
+          ns = Math.max(0, Math.min(maxStart, origStart + d));
+          seg.style.left = (ns / 1440 * 100) + "%";
+          seg.style.width = ((1440 - ns) / 1440 * 100) + "%";
+        } else {
+          var minEnd = Math.max(0, origStart - 1435);
+          ne = Math.max(minEnd, Math.min(1440, origEnd + d));
+          seg.style.width = (ne / 1440 * 100) + "%";
+        }
+        var dur = wrapAwareDur(edge === "start" ? ns : origStart, edge === "end" ? ne : origEnd);
+        var label = edge === "start"
+          ? fmtHHMM(ns) + " 〜 翌" + fmtHHMM(origEnd)
+          : "前日 " + fmtHHMM(origStart) + " 〜 " + fmtHHMM(ne);
+        showTip(m.clientX, topY - 6, label + "（" + durText(dur) + "）");
+      }
+      function up() {
+        seg.removeEventListener("pointermove", mv);
+        seg.removeEventListener("pointerup", up);
+        try { seg.releasePointerCapture(ev.pointerId); } catch (x) {}
+        hideTip();
+        if (moved && ((edge === "start" && ns !== origStart) || (edge === "end" && ne !== origEnd))) {
+          dragMoved = true;
+          commitEntry(e, edge === "start" ? ns : origStart, edge === "end" ? ne : origEnd, "長さ変更");
+        }
+      }
+      seg.addEventListener("pointermove", mv);
+      seg.addEventListener("pointerup", up);
+    });
+  }
+
   // 横タイムライン：中央ドラッグ=移動／端ドラッグ=伸縮
   function attachDragTimeline(seg, it) {
-    if (it.part !== "full") return;
+    if (it.part === "head") { attachWrapResizeTimeline(seg, it, "start"); return; }
+    if (it.part === "tail") { attachWrapResizeTimeline(seg, it, "end"); return; }
     seg.style.cursor = "grab";
     // ホバー時、端ではリサイズカーソル＋端のガイド線（縦線）を出す
     seg.addEventListener("pointermove", function (ev) {
@@ -989,9 +1286,58 @@
     return deg / 360 * 1440;
   }
 
+  // 時計版：日またぎセグメント（head/tail）の長さ変更。実体のある側の端のみドラッグ可。
+  function attachWrapResizeClock(path, it, edge) {
+    var svg = document.getElementById("clock");
+    path.style.cursor = "ew-resize";
+    path.addEventListener("pointerdown", function (ev) {
+      ev.preventDefault();
+      dragMoved = false;
+      var e = it.entry, origStart = toMin(e.start), origEnd = toMin(e.end);
+      var rr = Math.max(40, (R_OUT - 8) - it.lane * 20);
+      var sx = ev.clientX, sy = ev.clientY, moved = false, ns = origStart, ne = origEnd;
+      try { path.setPointerCapture(ev.pointerId); } catch (x) {}
+      path.style.transition = "none";
+      path.style.strokeDasharray = "none"; path.style.strokeDashoffset = "0";
+      function mv(m) {
+        if (Math.hypot(m.clientX - sx, m.clientY - sy) > 4) moved = true;
+        var pm = Math.round(pointerToMin(m, svg) / 5) * 5;
+        if (edge === "start") {
+          var maxStart = Math.min(1439, 1435 + origEnd);
+          ns = Math.max(0, Math.min(maxStart, pm));
+          path.setAttribute("d", arcPath(CX, CY, rr, ns, 1440));
+          showClockGuide(ns, rr);
+        } else {
+          var minEnd = Math.max(0, origStart - 1435);
+          ne = Math.max(minEnd, Math.min(1440, pm));
+          path.setAttribute("d", arcPath(CX, CY, rr, 0, ne));
+          showClockGuide(ne, rr);
+        }
+        var dur = wrapAwareDur(edge === "start" ? ns : origStart, edge === "end" ? ne : origEnd);
+        var label = edge === "start"
+          ? fmtHHMM(ns) + " 〜 翌" + fmtHHMM(origEnd)
+          : "前日 " + fmtHHMM(origStart) + " 〜 " + fmtHHMM(ne);
+        showTip(m.clientX, m.clientY - 6, label + "（" + durText(dur) + "）");
+      }
+      function up() {
+        path.removeEventListener("pointermove", mv);
+        path.removeEventListener("pointerup", up);
+        try { path.releasePointerCapture(ev.pointerId); } catch (x) {}
+        hideTip(); hideClockGuide();
+        if (moved && ((edge === "start" && ns !== origStart) || (edge === "end" && ne !== origEnd))) {
+          dragMoved = true;
+          commitEntry(e, edge === "start" ? ns : origStart, edge === "end" ? ne : origEnd, "長さ変更");
+        }
+      }
+      path.addEventListener("pointermove", mv);
+      path.addEventListener("pointerup", up);
+    });
+  }
+
   // 時計：中央ドラッグ=回転移動／端ドラッグ=伸縮
   function attachDragClock(path, it) {
-    if (it.part !== "full") return;
+    if (it.part === "head") { attachWrapResizeClock(path, it, "start"); return; }
+    if (it.part === "tail") { attachWrapResizeClock(path, it, "end"); return; }
     var svg = document.getElementById("clock");
     path.style.cursor = "grab";
     path.addEventListener("pointermove", function (ev) {
@@ -1187,6 +1533,64 @@
   }
 
   // ============================================================
+  // テンプレート（おすすめプリセット＋ユーザー作成）
+  // ============================================================
+  function renderTemplateList() {
+    var wrap = document.getElementById("tplList");
+    wrap.innerHTML = "";
+    var list = allTemplates();
+    if (!list.length) {
+      wrap.innerHTML = '<div class="tpl-empty">テンプレートがありません。<br>予定の編集画面から「☆ テンプレート化」で追加できます。</div>';
+      return;
+    }
+    list.forEach(function (t) {
+      var chip = document.createElement("div");
+      chip.className = "tpl-chip";
+      chip.innerHTML =
+        (t.preset ? '<span class="tpl-star">★</span>' : '<span class="tpl-sw" style="background:' + t.color + '"></span>') +
+        '<span class="tpl-title"></span>' +
+        '<span class="tpl-time">' + t.start + (isWrap(t) ? "〜翌" : "〜") + t.end + '</span>' +
+        (t.preset ? "" : '<button class="tpl-del" title="このテンプレートを削除">×</button>');
+      chip.querySelector(".tpl-title").textContent = t.title;
+      chip.style.borderLeft = "3px solid " + t.color;
+      chip.addEventListener("click", function () { applyTemplate(t); });
+      var delBtn = chip.querySelector(".tpl-del");
+      if (delBtn) {
+        delBtn.addEventListener("click", function (ev) { ev.stopPropagation(); deleteTemplate(t.id); });
+      }
+      wrap.appendChild(chip);
+    });
+  }
+
+  function applyTemplate(tpl) {
+    if (!data[selectedDate]) data[selectedDate] = [];
+    data[selectedDate].push({
+      id: uid(), title: tpl.title, start: tpl.start, end: tpl.end, color: tpl.color, note: ""
+    });
+    saveData(); closeTplPopover(); renderAll();
+    toast("テンプレートを追加 → " + tpl.title);
+  }
+
+  function deleteTemplate(id) {
+    userTemplates = userTemplates.filter(function (t) { return t.id !== id; });
+    saveTemplates(); renderTemplateList();
+    toast("テンプレートを削除しました");
+  }
+
+  function saveAsTemplate() {
+    var title = document.getElementById("fTitle").value.trim() || "(無題)";
+    var start = document.getElementById("fStart").value;
+    var end = document.getElementById("fEnd").value;
+    if (toMin(end) === toMin(start)) { toast("開始と終了が同じ時刻です"); return; }
+    userTemplates.push({ id: uid(), title: title, start: start, end: end, color: pickedColor, preset: false });
+    saveTemplates(); renderTemplateList();
+    toast("テンプレートに保存しました：" + title);
+  }
+
+  function openTplPopover() { renderTemplateList(); document.getElementById("tplPopover").classList.add("open"); }
+  function closeTplPopover() { document.getElementById("tplPopover").classList.remove("open"); }
+
+  // ============================================================
   // テーマ
   // ============================================================
   function applyTheme(t) {
@@ -1241,6 +1645,15 @@
   // イベント配線
   // ============================================================
   document.getElementById("btnAdd").addEventListener("click", function () { openModal(null); });
+  document.getElementById("btnSaveTpl").addEventListener("click", saveAsTemplate);
+  document.getElementById("btnTemplates").addEventListener("click", function () {
+    var pop = document.getElementById("tplPopover");
+    if (pop.classList.contains("open")) closeTplPopover(); else openTplPopover();
+  });
+  document.addEventListener("click", function (e) {
+    var head = document.getElementById("listHead");
+    if (head && !head.contains(e.target)) closeTplPopover();
+  });
   // ドラッグのツールチップが取り残されないための保険
   window.addEventListener("pointerup", hideTip);
   window.addEventListener("pointercancel", hideTip);
@@ -1253,7 +1666,7 @@
     if (e.target === this) closeModal();
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") closeModal();
+    if (e.key === "Escape") { closeModal(); closeTplPopover(); }
     if (e.key === "Enter" && document.getElementById("overlay").classList.contains("open")
         && e.target.tagName !== "TEXTAREA") saveEntry();
   });
@@ -1273,6 +1686,16 @@
   document.getElementById("themeSwitch").addEventListener("click", function (e) {
     var t = e.target.getAttribute("data-t");
     if (t) applyTheme(t);
+  });
+
+  document.getElementById("summarySeg").addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest("button[data-p]") : null;
+    if (!btn) return;
+    summaryPeriod = btn.getAttribute("data-p");
+    document.querySelectorAll("#summarySeg button").forEach(function (b) {
+      b.classList.toggle("active", b === btn);
+    });
+    renderSummary();
   });
 
   document.getElementById("btnExport").addEventListener("click", exportJSON);
