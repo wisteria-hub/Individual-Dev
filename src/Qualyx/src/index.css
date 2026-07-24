@@ -1,0 +1,49 @@
+:root {
+  /* 宇宙テーマ（ダーク固定） */
+  --qx-bg-0: #070711;
+  --qx-bg-1: #0e1024;
+  --qx-bg-2: #141637;
+  --qx-text: #c7c9e6;
+  --qx-text-strong: #f4f5ff;
+  --qx-text-muted: #7b7ea6;
+  --qx-border: rgba(140, 150, 210, 0.18);
+  --qx-border-strong: rgba(160, 170, 230, 0.4);
+  --qx-surface: rgba(22, 24, 52, 0.72);
+
+  /* アクセント（獲得の輝き） */
+  --qx-accent: #7cc4ff;
+  --qx-accent-2: #c79bff;
+  --qx-gold: #ffd166;
+  --qx-acquired: #8affc1;
+  --qx-acquired-glow: rgba(138, 255, 193, 0.55);
+
+  /* ノード */
+  --qx-diamond-idle: rgba(124, 196, 255, 0.08);
+  --qx-diamond-stroke: rgba(160, 178, 235, 0.55);
+
+  font: 16px/1.5 system-ui, 'Segoe UI', 'Hiragino Kaku Gothic ProN', Meiryo,
+    sans-serif;
+  color-scheme: dark;
+  color: var(--qx-text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--qx-bg-0);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--qx-text-strong);
+  margin: 0;
+}

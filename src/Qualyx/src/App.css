@@ -1,0 +1,549 @@
+.qx-app {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 120% 80% at 50% -10%,
+      var(--qx-bg-2) 0%,
+      var(--qx-bg-1) 45%,
+      var(--qx-bg-0) 100%
+    );
+}
+
+/* ---- 宇宙の背景（規則的な点） ---- */
+.qx-stars {
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    rgba(200, 214, 255, 0.55) 0.9px,
+    transparent 1.6px
+  );
+  background-size: 46px 46px;
+  opacity: 0.35;
+  animation: qx-drift 90s linear infinite;
+}
+
+.qx-stars--far {
+  background-size: 78px 78px;
+  background-image: radial-gradient(
+    circle,
+    rgba(160, 180, 255, 0.4) 0.7px,
+    transparent 1.4px
+  );
+  opacity: 0.22;
+  animation-duration: 150s;
+  animation-direction: reverse;
+}
+
+@keyframes qx-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(46px, 46px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qx-stars {
+    animation: none;
+  }
+}
+
+/* ---- レイアウト ---- */
+.qx-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.qx-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--qx-border);
+  backdrop-filter: blur(6px);
+}
+
+.qx-header-title h1 {
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(120deg, var(--qx-accent), var(--qx-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.qx-header-title p {
+  margin: 4px 0 0;
+  color: var(--qx-text-muted);
+  font-size: 13px;
+}
+
+.qx-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.qx-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.qx-counter-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--qx-acquired);
+}
+
+.qx-counter-sep,
+.qx-counter-total {
+  color: var(--qx-text-muted);
+}
+
+.qx-reset {
+  border: 1px solid var(--qx-border-strong);
+  background: transparent;
+  color: var(--qx-text);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qx-reset:hover {
+  border-color: var(--qx-accent);
+  color: var(--qx-accent);
+}
+
+/* ---- CategoryFilter ---- */
+.qx-category-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--qx-border);
+}
+
+.qx-category-option {
+  border: 1px solid var(--qx-border-strong);
+  background: var(--qx-surface);
+  color: var(--qx-text);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qx-category-option[data-active='true'] {
+  background: linear-gradient(120deg, var(--qx-accent), var(--qx-accent-2));
+  border-color: transparent;
+  color: #0a0a17;
+  font-weight: 600;
+}
+
+/* ---- Canvas ---- */
+.qx-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.qx-canvas-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 32px;
+}
+
+.qx-canvas {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* ---- エッジ（星座線） ---- */
+.qx-edge {
+  stroke: rgba(150, 165, 230, 0.28);
+  stroke-width: 1.4;
+  transition:
+    stroke 0.4s ease,
+    stroke-width 0.4s ease;
+}
+
+.qx-edge[data-lit='true'] {
+  stroke: var(--qx-acquired-glow);
+  stroke-width: 2;
+}
+
+/* ---- ひし形ノード ---- */
+.qx-node {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.qx-diamond {
+  fill: var(--qx-diamond-idle);
+  stroke: var(--qx-diamond-stroke);
+  stroke-width: 2;
+  transition:
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+.qx-diamond[data-pressing='true'] {
+  fill: rgba(124, 196, 255, 0.16);
+}
+
+.qx-diamond[data-acquired='true'] {
+  fill: rgba(138, 255, 193, 0.16);
+  stroke: var(--qx-acquired);
+}
+
+.qx-node:focus-visible .qx-diamond {
+  stroke: var(--qx-accent);
+}
+
+/* 獲得済みの外周グロー */
+.qx-diamond-glow {
+  fill: none;
+  stroke: var(--qx-acquired);
+  stroke-width: 1.5;
+  opacity: 0.25;
+  filter: drop-shadow(0 0 6px var(--qx-acquired-glow));
+  animation: qx-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes qx-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* 長押しゲージ（左回りに伸びる線） */
+.qx-gauge {
+  stroke: var(--qx-gold);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(255, 209, 102, 0.7));
+}
+
+.qx-gauge[data-acquired='true'] {
+  stroke: var(--qx-acquired);
+  filter: drop-shadow(0 0 5px var(--qx-acquired-glow));
+}
+
+.qx-diamond-mark {
+  fill: var(--qx-text-strong);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.qx-node-label {
+  fill: var(--qx-text);
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.qx-node-label[data-acquired='true'] {
+  fill: var(--qx-acquired);
+}
+
+.qx-node-date {
+  fill: var(--qx-text-muted);
+  font-size: 10.5px;
+  pointer-events: none;
+}
+
+/* ---- Footer ---- */
+.qx-footer {
+  border-top: 1px solid var(--qx-border);
+  padding: 14px 28px;
+  font-size: 12px;
+  color: var(--qx-text-muted);
+  text-align: center;
+}
+
+/* ---- Congrats Modal ---- */
+.qx-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4, 4, 12, 0.6);
+  backdrop-filter: blur(4px);
+  animation: qx-fade-in 0.2s ease;
+}
+
+.qx-modal {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 40px 32px 32px;
+  border-radius: 20px;
+  border: 1px solid var(--qx-border-strong);
+  background:
+    radial-gradient(
+      ellipse 100% 60% at 50% 0%,
+      rgba(124, 196, 255, 0.18),
+      transparent 70%
+    ),
+    var(--qx-bg-1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: qx-pop-in 0.35s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+@keyframes qx-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes qx-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(12px);
+  }
+}
+
+.qx-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  color: var(--qx-text-muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qx-modal-badge {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 30px;
+  color: var(--qx-bg-0);
+  background: linear-gradient(135deg, var(--qx-gold), var(--qx-acquired));
+  box-shadow: 0 0 24px var(--qx-acquired-glow);
+}
+
+.qx-modal-badge[data-new='true'] {
+  animation: qx-badge-pop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes qx-badge-pop {
+  0% {
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.2);
+  }
+}
+
+.qx-modal-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--qx-text-strong);
+}
+
+.qx-modal-category {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--qx-accent);
+}
+
+.qx-modal-name {
+  margin: 4px 0 24px;
+  font-size: 24px;
+}
+
+.qx-modal-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--qx-border);
+}
+
+.qx-modal-date-label {
+  font-size: 12px;
+  color: var(--qx-text-muted);
+}
+
+.qx-modal-date-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--qx-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 取り消しアクション / 確認 */
+.qx-modal-actions {
+  margin-top: 22px;
+}
+
+.qx-modal-caution {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--qx-gold);
+}
+
+.qx-modal-caution strong {
+  color: #ffb4b4;
+}
+
+.qx-modal-confirm {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--qx-border);
+  text-align: left;
+}
+
+.qx-confirm-lead {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--qx-text-strong);
+  text-align: center;
+}
+
+.qx-confirm-affected {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 120, 120, 0.08);
+  border: 1px solid rgba(255, 120, 120, 0.25);
+}
+
+.qx-confirm-affected ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--qx-text);
+}
+
+.qx-confirm-affected li {
+  margin: 2px 0;
+}
+
+.qx-confirm-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.qx-btn-danger,
+.qx-btn-ghost {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qx-btn-danger {
+  border: 1px solid rgba(255, 120, 120, 0.5);
+  background: rgba(255, 120, 120, 0.12);
+  color: #ff9b9b;
+}
+
+.qx-btn-danger:hover {
+  background: rgba(255, 120, 120, 0.22);
+  border-color: #ff9b9b;
+}
+
+.qx-btn-ghost {
+  border: 1px solid var(--qx-border-strong);
+  background: transparent;
+  color: var(--qx-text);
+}
+
+.qx-btn-ghost:hover {
+  border-color: var(--qx-accent);
+  color: var(--qx-accent);
+}
+
+.qx-modal-actions .qx-btn-danger {
+  width: 100%;
+}
+
+/* 紙吹雪 */
+.qx-confetti {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.qx-confetti-piece {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: qx-burst 0.9s ease-out forwards;
+  animation-delay: var(--delay);
+}
+
+@keyframes qx-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0.4) rotate(220deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qx-confetti-piece {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ---- レスポンシブ ---- */
+@media (max-width: 640px) {
+  .qx-header,
+  .qx-category-filter,
+  .qx-canvas-scroll {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
