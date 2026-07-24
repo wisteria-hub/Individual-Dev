@@ -91,19 +91,19 @@ export default function CongratsModal({
           </span>
         </div>
 
-        {/* 取り消し（取得直後の祝福表示では出さない） */}
+        {/* 取り消し（取得直後の祝福表示では出さない）。小さく右端に置く。 */}
         {!isNew && !confirming && (
           <div className="qx-modal-actions">
+            <button type="button" className="qx-btn-close" onClick={onClose}>
+              閉じる
+            </button>
             <button
               type="button"
-              className="qx-btn-danger"
+              className="qx-btn-release"
               onClick={() => setConfirming(true)}
             >
-              この資格を取り消す
+              取り消す
             </button>
-            <p className="qx-modal-caution">
-              ⚠ 取り消すと、この資格を前提とする<strong>上位資格も一緒に取り消され</strong>ます。
-            </p>
           </div>
         )}
 

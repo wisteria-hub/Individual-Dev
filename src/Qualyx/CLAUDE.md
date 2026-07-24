@@ -20,6 +20,8 @@
 - **開発は必ず `C:\dev\Qualyx` で行い**、コミット時に `Individual-Dev/src/Qualyx` へ内容を同期する（`node_modules` / `dist` / `.git` は除外してコピー）。
 - 別PCで作業する場合、パスにASCIIのみのクローン先（例 `C:\dev\Individual-Dev`）を使えば、この二重管理は不要になる可能性が高い（そのマシンで `npm run dev` が動くか最初に確認すること）。
 
+**確認済み事例**: `C:\Users\<user>\Documents\GitHub\Individual-Dev\src\Qualyx`（パスに日本語なし）にクローンしたマシンでは `npm install` / `npm run dev` / `npm run build` / `npm run lint` すべて正常動作を確認（2026-07-24）。**このパスがASCIIのみのマシンでは `C:\dev\Qualyx` への二重管理は不要** — リポジトリ直下で直接開発してよい。日本語を含むパス（例: ユーザー名やフォルダ名に日本語がある場合）配下でのみ、上記の二重管理ワークアラウンドが必要になる。
+
 関連メモリ: `env-japanese-path-node-crash`, `project-qualyx`
 
 ---

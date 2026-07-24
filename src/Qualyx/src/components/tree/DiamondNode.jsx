@@ -5,6 +5,16 @@ import { formatAcquiredDate } from '../../utils/formatDate.js'
 const FILL_MS = 1200 // 満タンまでの長押し時間
 const DRAIN_MS = 500 // 離してから空になるまでの時間
 
+// 難易度(=マーク個数)ごとの配置。横一列ではなく、ひし形の中に収まるよう
+// 縦・三角・菱形状に散らす。points は中心(0,0)基準のオフセット [dx, dy]。
+const MARK_LAYOUT = {
+  1: { size: 30, points: [[0, 0]] },
+  2: { size: 21, points: [[0, -11], [0, 11]] },
+  3: { size: 18, points: [[0, -13], [-12, 8], [12, 8]] },
+  4: { size: 18, points: [[0, -16], [-16, 0], [16, 0], [0, 16]] },
+  5: { size: 16, points: [[0, -16], [-16, 0], [0, 0], [16, 0], [0, 16]] },
+}
+
 // ひし形の頂点（中心基準）。上→左→下→右 の順で左回り(CCW)に一周する。
 const H = DIAMOND_SIZE / 2
 const DIAMOND_POINTS = `0,${-H} ${-H},0 0,${H} ${H},0`
@@ -25,16 +35,19 @@ export default function DiamondNode({
   const modeRef = useRef('idle') // 'fill' | 'drain' | 'idle'
   const lastTsRef = useRef(0)
   const rafRef = useRef(0)
+  const suppressClickRef = useRef(false)
   const onAcquireRef = useRef(onAcquire)
   onAcquireRef.current = onAcquire
 
-  // 獲得状態が変わったらゲージを満タン固定にする。
+  // 獲得状態が変わったらゲージを同期する。
+  // 獲得済み → 満タン固定 / 取り消し(未獲得に戻る) → 空に戻す。
   useEffect(() => {
-    if (acquired) {
-      modeRef.current = 'idle'
-      progressRef.current = 1
-      setProgress(1)
-    }
+    modeRef.current = 'idle'
+    lastTsRef.current = 0
+    cancelAnimationFrame(rafRef.current)
+    const next = acquired ? 1 : 0
+    progressRef.current = next
+    setProgress(next)
   }, [acquired])
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), [])
@@ -55,6 +68,9 @@ export default function DiamondNode({
 
     if (modeRef.current === 'fill' && p >= 1) {
       modeRef.current = 'idle'
+      // 獲得完了→acquiredがtrueになる。直後のpointerupで発火するclickが
+      // 情報画面(onShowInfo)を開いてしまわないよう、その1回だけclickを抑制する。
+      suppressClickRef.current = true
       onAcquireRef.current(node.id)
       return
     }
@@ -88,9 +104,20 @@ export default function DiamondNode({
   }, [loop])
 
   const handlePointerDown = (e) => {
+    // 新しい操作の開始時に抑制フラグを解除（取得済みノードのタップ→情報表示は通す）。
+    suppressClickRef.current = false
     if (acquired) return
     e.currentTarget.setPointerCapture?.(e.pointerId)
     startFill()
+  }
+
+  const handleClick = () => {
+    // 長押し獲得の直後に発火する click は無視する（1回だけ）。
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false
+      return
+    }
+    if (acquired) onShowInfo(node.id)
   }
 
   const handleRelease = () => {
@@ -100,6 +127,11 @@ export default function DiamondNode({
 
   const dashOffset = PERIMETER * (1 - progress)
   const pressing = progress > 0 && !acquired
+
+  // 難易度 = 個数。明示の difficulty があれば優先、無ければツリーの深さ(level+1)。
+  const difficulty = Math.max(1, Math.min(5, node.difficulty ?? (node.level ?? 0) + 1))
+  const markChar = acquired ? '✦' : '◆'
+  const markLayout = MARK_LAYOUT[difficulty] ?? MARK_LAYOUT[5]
 
   return (
     <g
@@ -112,7 +144,7 @@ export default function DiamondNode({
       onPointerDown={handlePointerDown}
       onPointerUp={handleRelease}
       onPointerCancel={handleRelease}
-      onClick={() => acquired && onShowInfo(node.id)}
+      onClick={handleClick}
       onContextMenu={(e) => e.preventDefault()}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -148,15 +180,20 @@ export default function DiamondNode({
         data-acquired={acquired}
       />
 
-      {/* 中央マーク */}
-      <text
-        className="qx-diamond-mark"
-        y="1"
-        textAnchor="middle"
-        dominantBaseline="central"
-      >
-        {acquired ? '✦' : '◆'}
-      </text>
+      {/* 中央マーク（難易度の数だけ、ひし形内に散らして配置） */}
+      {markLayout.points.map(([dx, dy], i) => (
+        <text
+          key={i}
+          className="qx-diamond-mark"
+          x={dx}
+          y={dy + 1}
+          textAnchor="middle"
+          dominantBaseline="central"
+          style={{ fontSize: `${markLayout.size}px` }}
+        >
+          {markChar}
+        </text>
+      ))}
 
       {/* 資格名 */}
       <text

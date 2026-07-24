@@ -4,10 +4,10 @@
 // 同一レベル内は category → id 順で安定ソートし、横方向に等間隔で並べる。
 
 const DEFAULTS = {
-  nodeWidth: 150, // ひし形＋資格名ラベルを収めるセル幅
-  nodeHeight: 104, // ひし形＋ラベル＋取得日を収めるセル高
+  nodeWidth: 160, // ひし形＋資格名ラベルを収めるセル幅
+  nodeHeight: 128, // ひし形＋ラベル＋取得日を収めるセル高
   gapX: 28, // 同レベル内ノードの横間隔
-  gapY: 56, // レベル間の縦間隔
+  gapY: 60, // レベル間の縦間隔
   paddingX: 48,
   paddingY: 48,
 }
@@ -37,15 +37,21 @@ export function layoutTree(graph, options = {}) {
   const sortedLevels = [...byLevel.keys()].sort((a, b) => a - b)
   const step = opts.nodeWidth + opts.gapX
 
+  // 各段（レベル）を中央揃えにする。最も広い段を基準に、狭い段は左右に余白を振り分ける。
+  const maxRowCount = Math.max(...[...byLevel.values()].map((r) => r.length), 1)
+  const innerWidth = maxRowCount * step - opts.gapX
+
   for (const lv of sortedLevels) {
     const row = byLevel.get(lv)
     row.sort(
       (a, b) =>
         a.category.localeCompare(b.category) || a.id.localeCompare(b.id),
     )
+    const rowWidth = row.length * step - opts.gapX
+    const rowOffsetX = opts.paddingX + (innerWidth - rowWidth) / 2
     row.forEach((node, i) => {
       positions.set(node.id, {
-        x: opts.paddingX + i * step,
+        x: rowOffsetX + i * step,
         y: opts.paddingY + lv * (opts.nodeHeight + opts.gapY),
         width: opts.nodeWidth,
         height: opts.nodeHeight,
@@ -54,8 +60,7 @@ export function layoutTree(graph, options = {}) {
     })
   }
 
-  const maxRowCount = Math.max(...[...byLevel.values()].map((r) => r.length), 1)
-  const width = opts.paddingX * 2 + maxRowCount * step - opts.gapX
+  const width = opts.paddingX * 2 + innerWidth
   const height =
     opts.paddingY * 2 +
     (sortedLevels.length || 1) * (opts.nodeHeight + opts.gapY) -

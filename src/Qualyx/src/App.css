@@ -162,15 +162,24 @@
   min-height: 0;
 }
 
-.qx-canvas-scroll {
+/* 背景をドラッグして視点を移動する領域。スクロールバーは出さず pan で動かす。 */
+.qx-canvas-viewport {
   flex: 1;
-  overflow: auto;
-  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.qx-canvas-viewport[data-panning='true'] {
+  cursor: grabbing;
 }
 
 .qx-canvas {
   display: block;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
@@ -409,7 +418,36 @@
 
 /* 取り消しアクション / 確認 */
 .qx-modal-actions {
-  margin-top: 22px;
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 取得済み表示の小さなアクション（右端に閉じる／取り消すを並べる）。 */
+.qx-btn-close,
+.qx-btn-release {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--qx-text-muted);
+  background: transparent;
+  border: 1px solid var(--qx-border-strong);
+  transition: all 0.15s ease;
+}
+
+.qx-btn-close:hover {
+  color: var(--qx-accent);
+  border-color: var(--qx-accent);
+}
+
+.qx-btn-release:hover {
+  color: #ff9b9b;
+  border-color: rgba(255, 120, 120, 0.5);
+  background: rgba(255, 120, 120, 0.1);
 }
 
 .qx-modal-caution {
@@ -496,10 +534,6 @@
   color: var(--qx-accent);
 }
 
-.qx-modal-actions .qx-btn-danger {
-  width: 100%;
-}
-
 /* 紙吹雪 */
 .qx-confetti {
   position: absolute;
@@ -541,8 +575,7 @@
 /* ---- レスポンシブ ---- */
 @media (max-width: 640px) {
   .qx-header,
-  .qx-category-filter,
-  .qx-canvas-scroll {
+  .qx-category-filter {
     padding-left: 16px;
     padding-right: 16px;
   }

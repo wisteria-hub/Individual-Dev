@@ -7,6 +7,7 @@ import Header from './components/layout/Header.jsx'
 import Footer from './components/layout/Footer.jsx'
 import CategoryFilter from './components/tree/CategoryFilter.jsx'
 import SkillTreeCanvas from './components/tree/SkillTreeCanvas.jsx'
+import { usePan } from './components/tree/usePan.js'
 import CongratsModal from './components/common/CongratsModal.jsx'
 import './App.css'
 
@@ -23,6 +24,11 @@ function App() {
     return layoutTree(buildGraph(filtered))
   }, [category])
 
+  const { containerRef, pan, scale, surfaceProps, isPanning } = usePan(
+    layout.width,
+    layout.height,
+  )
+
   const handleAcquire = (id) => {
     acquire(id)
     setModal({ id, isNew: true })
@@ -38,8 +44,22 @@ function App() {
 
   return (
     <div className="qx-app">
-      <div className="qx-stars" aria-hidden="true" />
-      <div className="qx-stars qx-stars--far" aria-hidden="true" />
+      <div
+        className="qx-stars"
+        aria-hidden="true"
+        style={{
+          backgroundPosition: `${pan.x}px ${pan.y}px`,
+          backgroundSize: `${46 * scale}px ${46 * scale}px`,
+        }}
+      />
+      <div
+        className="qx-stars qx-stars--far"
+        aria-hidden="true"
+        style={{
+          backgroundPosition: `${pan.x * 0.6}px ${pan.y * 0.6}px`,
+          backgroundSize: `${78 * scale}px ${78 * scale}px`,
+        }}
+      />
 
       <div className="qx-shell">
         <Header
@@ -55,6 +75,11 @@ function App() {
             acquiredAt={acquiredAt}
             onAcquire={handleAcquire}
             onShowInfo={handleShowInfo}
+            containerRef={containerRef}
+            pan={pan}
+            scale={scale}
+            surfaceProps={surfaceProps}
+            isPanning={isPanning}
           />
         </main>
         <Footer />
