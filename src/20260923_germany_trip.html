@@ -1,0 +1,785 @@
+<title>Germany Trip 2026 — 旅程しおり</title>
+<style>
+  :root {
+    --ink: #241016;
+    --ink-soft: #4a3540;
+    --burgundy: #6b1e2e;
+    --burgundy-deep: #4a1420;
+    --gold: #a97a2f;
+    --gold-bright: #b8873a;
+    --bg: #e9e7de;
+    --card: #fbfaf5;
+    --card-alt: #f2f0e7;
+    --line: rgba(36, 16, 22, 0.14);
+    --line-strong: rgba(36, 16, 22, 0.28);
+    --tbd: #8a7d6b;
+    --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #ede6df;
+    --ink-soft: #c9beb4;
+    --burgundy: #c98a97;
+    --burgundy-deep: #e3a7b2;
+    --gold: #d8ab5f;
+    --gold-bright: #e6bd78;
+    --bg: #18141a;
+    --card: #221c25;
+    --card-alt: #2a222c;
+    --line: rgba(237, 230, 223, 0.14);
+    --line-strong: rgba(237, 230, 223, 0.28);
+    --tbd: #9d9186;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ede6df;
+      --ink-soft: #c9beb4;
+      --burgundy: #c98a97;
+      --burgundy-deep: #e3a7b2;
+      --gold: #d8ab5f;
+      --gold-bright: #e6bd78;
+      --bg: #18141a;
+      --card: #221c25;
+      --card-alt: #2a222c;
+      --line: rgba(237, 230, 223, 0.14);
+      --line-strong: rgba(237, 230, 223, 0.28);
+      --tbd: #9d9186;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ---------- header: boarding-pass strip ---------- */
+  .ticket {
+    margin-top: 28px;
+    background: linear-gradient(155deg, var(--burgundy) 0%, var(--burgundy-deep) 100%);
+    color: #f3e9e0;
+    border-radius: 14px;
+    padding: 30px 30px 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 18px 40px -20px rgba(0,0,0,0.5);
+  }
+  .ticket::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 14px 14px;
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin: 0 0 10px;
+  }
+  .ticket h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 6vw, 38px);
+    margin: 0 0 20px;
+    text-wrap: balance;
+    letter-spacing: 0.01em;
+  }
+  .route {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+  }
+  .route .code {
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .route .code small {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: rgba(243,233,224,0.72);
+    margin-top: 2px;
+  }
+  .route .line {
+    flex: 1;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(243,233,224,0.5) 40%, transparent 0%);
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+    position: relative;
+  }
+  .route .line::after {
+    content: "✈";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-size: 14px;
+  }
+  .ticket-meta {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(243,233,224,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+  }
+  .ticket-meta div span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(243,233,224,0.6);
+    margin-bottom: 3px;
+  }
+  .ticket-meta div strong {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  /* ---------- nav ---------- */
+  nav.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 4px;
+    margin-top: 18px;
+    padding: 8px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  nav.tabs a {
+    flex: 1;
+    text-align: center;
+    padding: 9px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav.tabs a.active {
+    background: var(--burgundy);
+    color: #f6ece4;
+  }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 44px; scroll-margin-top: 68px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: 23px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 4px 0 0;
+  }
+
+  /* progress */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .progress-bar {
+    width: 90px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--line-strong);
+    overflow: hidden;
+  }
+  .progress-bar > i {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+
+  /* checklist cards */
+  .cat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .cat-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 18px;
+    background: var(--card-alt);
+    border-bottom: 1px solid var(--line);
+  }
+  .cat-head h3 {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .cat-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  ul.items { list-style: none; margin: 0; padding: 4px 6px; }
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .item:hover { background: var(--card-alt); }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .punch {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .item input:checked + .punch {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .punch svg {
+    width: 11px;
+    height: 11px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .item input:checked + .punch svg { opacity: 1; }
+  .item span.label { font-size: 14.5px; }
+  .item input:checked ~ .label {
+    color: var(--ink-soft);
+    text-decoration: line-through;
+    text-decoration-color: var(--line-strong);
+  }
+  .item:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* timeline */
+  .timeline {
+    position: relative;
+    padding-left: 26px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .day {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .day::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--gold);
+  }
+  .day.tbd::before { background: var(--card); box-shadow: 0 0 0 1px var(--tbd); }
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .day-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .day-date {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+  }
+  .day-title { font-weight: 700; font-size: 14.5px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+  .tag.done { background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--gold-bright); }
+  .tag.tbd { color: var(--tbd); border: 1px solid var(--line-strong); }
+  .day-body { margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); }
+  .day-body p { margin: 4px 0; }
+  .fill {
+    display: inline-block;
+    min-width: 120px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+
+  /* info grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .info-card .k {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 6px;
+  }
+  .info-card .v { font-size: 14.5px; font-weight: 600; margin: 0 0 4px; }
+  .info-card .d { font-size: 12.5px; color: var(--ink-soft); margin: 0; }
+  .phrase-list { display: grid; gap: 6px; margin-top: 4px; }
+  .phrase-list div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+  .phrase-list b { font-family: var(--font-mono); font-weight: 600; }
+  .phrase-list span { color: var(--ink-soft); }
+
+  footer {
+    margin-top: 50px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  footer button {
+    font: inherit;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: none;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  footer button:hover { border-color: var(--gold); color: var(--gold); }
+
+  @media print {
+    nav.tabs { position: static; backdrop-filter: none; }
+    .ticket { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .item input:checked + .punch { background: transparent !important; border-color: var(--line-strong) !important; }
+    .item input:checked + .punch svg { opacity: 0 !important; }
+    .item input:checked ~ .label { text-decoration: none !important; color: var(--ink) !important; }
+    footer button { display: none; }
+  }
+</style>
+
+<div class="page">
+
+  <div class="ticket">
+    <p class="eyebrow">Travel Document · E-Ticket Itinerary</p>
+    <h1>Germany Trip 2026</h1>
+    <div class="route">
+      <div class="code">HND<small>羽田空港</small></div>
+      <div class="line"></div>
+      <div class="code">FRA<small>フランクフルト</small></div>
+    </div>
+    <div class="ticket-meta">
+      <div><span>前泊</span><strong>09.22 (火) 東京</strong></div>
+      <div><span>出国</span><strong>09.23 (水)</strong></div>
+      <div><span>滞在</span><strong>ドイツ 8日間</strong></div>
+      <div><span>帰国目安</span><strong>09.30〜10.01</strong></div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <a href="#packing" class="active">持ち物</a>
+    <a href="#itinerary">日程</a>
+    <a href="#info">現地情報</a>
+  </nav>
+
+  <section id="packing">
+    <div class="section-head">
+      <div>
+        <h2>持ち物チェックリスト</h2>
+        <p class="section-sub">タップでチェック。内容はブラウザに保存されます。</p>
+      </div>
+      <div class="progress-wrap">
+        <span id="totalCount">0 / 46</span>
+        <div class="progress-bar"><i id="totalBar"></i></div>
+      </div>
+    </div>
+
+    <div class="cat" data-cat="doc">
+      <div class="cat-head"><h3>貴重品・書類</h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="doc-1"><label class="punch" for="doc-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-1">パスポート(残存有効期間 6ヶ月以上を確認)</label></li>
+        <li class="item"><input type="checkbox" id="doc-2"><label class="punch" for="doc-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-2">パスポートのコピー(紙+スマホ写真)</label></li>
+        <li class="item"><input type="checkbox" id="doc-3"><label class="punch" for="doc-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-3">航空券 e チケット控え(羽田→フランクフルト)</label></li>
+        <li class="item"><input type="checkbox" id="doc-4"><label class="punch" for="doc-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-4">新幹線チケット(9/22分)</label></li>
+        <li class="item"><input type="checkbox" id="doc-5"><label class="punch" for="doc-5"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-5">海外旅行保険の証券・緊急連絡先控え</label></li>
+        <li class="item"><input type="checkbox" id="doc-6"><label class="punch" for="doc-6"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-6">クレジットカード(海外対応、2枚以上)</label></li>
+        <li class="item"><input type="checkbox" id="doc-7"><label class="punch" for="doc-7"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-7">現金(ユーロ、少額)</label></li>
+        <li class="item"><input type="checkbox" id="doc-8"><label class="punch" for="doc-8"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-8">宿泊予約確認書(印刷 or スマホ保存)</label></li>
+        <li class="item"><input type="checkbox" id="doc-9"><label class="punch" for="doc-9"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="doc-9">在ドイツ日本大使館の連絡先メモ</label></li>
+      </ul>
+    </div>
+
+    <div class="cat" data-cat="elec">
+      <div class="cat-head"><h3>電子機器</h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="elec-1"><label class="punch" for="elec-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-1">変換プラグ(Type F 対応)</label></li>
+        <li class="item"><input type="checkbox" id="elec-2"><label class="punch" for="elec-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-2">モバイルバッテリー</label></li>
+        <li class="item"><input type="checkbox" id="elec-3"><label class="punch" for="elec-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-3">スマホ充電ケーブル・ACアダプター</label></li>
+        <li class="item"><input type="checkbox" id="elec-4"><label class="punch" for="elec-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-4">カメラ・予備バッテリー/SDカード</label></li>
+        <li class="item"><input type="checkbox" id="elec-5"><label class="punch" for="elec-5"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-5">イヤホン</label></li>
+        <li class="item"><input type="checkbox" id="elec-6"><label class="punch" for="elec-6"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-6">海外用 eSIM または Wi-Fi ルーター</label></li>
+        <li class="item"><input type="checkbox" id="elec-7"><label class="punch" for="elec-7"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="elec-7">腕時計 / スマートウォッチ</label></li>
+      </ul>
+    </div>
+
+    <div class="cat" data-cat="cloth">
+      <div class="cat-head"><h3>衣類 <span style="font-weight:400;color:var(--ink-soft)">— 9月ドイツ想定 最高18〜20℃/最低8〜12℃</span></h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="cloth-1"><label class="punch" for="cloth-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-1">長袖シャツ・カットソー(日数分)</label></li>
+        <li class="item"><input type="checkbox" id="cloth-2"><label class="punch" for="cloth-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-2">薄手ニット・カーディガン</label></li>
+        <li class="item"><input type="checkbox" id="cloth-3"><label class="punch" for="cloth-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-3">軽量ダウン or 中綿ジャケット</label></li>
+        <li class="item"><input type="checkbox" id="cloth-4"><label class="punch" for="cloth-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-4">防水・撥水アウター(レインジャケット)</label></li>
+        <li class="item"><input type="checkbox" id="cloth-5"><label class="punch" for="cloth-5"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-5">折りたたみ傘</label></li>
+        <li class="item"><input type="checkbox" id="cloth-6"><label class="punch" for="cloth-6"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-6">スカーフ・ストール</label></li>
+        <li class="item"><input type="checkbox" id="cloth-7"><label class="punch" for="cloth-7"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-7">歩きやすい靴(石畳が多い)</label></li>
+        <li class="item"><input type="checkbox" id="cloth-8"><label class="punch" for="cloth-8"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-8">靴下・下着(日数+1)</label></li>
+        <li class="item"><input type="checkbox" id="cloth-9"><label class="punch" for="cloth-9"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-9">部屋着・寝巻き</label></li>
+        <li class="item"><input type="checkbox" id="cloth-10"><label class="punch" for="cloth-10"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="cloth-10">帽子</label></li>
+      </ul>
+    </div>
+
+    <div class="cat" data-cat="toil">
+      <div class="cat-head"><h3>洗面・衛生用品</h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="toil-1"><label class="punch" for="toil-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-1">歯ブラシセット</label></li>
+        <li class="item"><input type="checkbox" id="toil-2"><label class="punch" for="toil-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-2">洗顔料・スキンケア一式</label></li>
+        <li class="item"><input type="checkbox" id="toil-3"><label class="punch" for="toil-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-3">日焼け止め</label></li>
+        <li class="item"><input type="checkbox" id="toil-4"><label class="punch" for="toil-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-4">リップクリーム(乾燥対策)</label></li>
+        <li class="item"><input type="checkbox" id="toil-5"><label class="punch" for="toil-5"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-5">コンタクト用品 or メガネ</label></li>
+        <li class="item"><input type="checkbox" id="toil-6"><label class="punch" for="toil-6"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-6">常備薬(酔い止め・胃腸薬・鎮痛剤)</label></li>
+        <li class="item"><input type="checkbox" id="toil-7"><label class="punch" for="toil-7"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-7">生理用品</label></li>
+        <li class="item"><input type="checkbox" id="toil-8"><label class="punch" for="toil-8"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="toil-8">マスク・除菌シート</label></li>
+      </ul>
+    </div>
+
+    <div class="cat" data-cat="misc">
+      <div class="cat-head"><h3>便利グッズ</h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="misc-1"><label class="punch" for="misc-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-1">エコバッグ</label></li>
+        <li class="item"><input type="checkbox" id="misc-2"><label class="punch" for="misc-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-2">洗濯洗剤シート</label></li>
+        <li class="item"><input type="checkbox" id="misc-3"><label class="punch" for="misc-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-3">南京錠</label></li>
+        <li class="item"><input type="checkbox" id="misc-4"><label class="punch" for="misc-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-4">耳栓・アイマスク(長時間フライト用)</label></li>
+        <li class="item"><input type="checkbox" id="misc-5"><label class="punch" for="misc-5"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-5">日本のインスタント食品・カイロ等</label></li>
+        <li class="item"><input type="checkbox" id="misc-6"><label class="punch" for="misc-6"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-6">スリッパ(機内・宿泊用)</label></li>
+        <li class="item"><input type="checkbox" id="misc-7"><label class="punch" for="misc-7"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-7">クリアファイル(書類整理用)</label></li>
+        <li class="item"><input type="checkbox" id="misc-8"><label class="punch" for="misc-8"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="misc-8">変圧器(対応電圧要確認の機器のみ)</label></li>
+      </ul>
+    </div>
+
+    <div class="cat" data-cat="tokyo">
+      <div class="cat-head"><h3>9/22 東京前泊分</h3><span class="cat-count"></span></div>
+      <ul class="items">
+        <li class="item"><input type="checkbox" id="tokyo-1"><label class="punch" for="tokyo-1"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="tokyo-1">新幹線チケット・座席番号メモ</label></li>
+        <li class="item"><input type="checkbox" id="tokyo-2"><label class="punch" for="tokyo-2"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="tokyo-2">前泊ホテルの予約確認</label></li>
+        <li class="item"><input type="checkbox" id="tokyo-3"><label class="punch" for="tokyo-3"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="tokyo-3">ホテル→羽田空港のアクセス確認</label></li>
+        <li class="item"><input type="checkbox" id="tokyo-4"><label class="punch" for="tokyo-4"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label><label class="label" for="tokyo-4">翌日分の身軽な手荷物</label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="itinerary">
+    <div class="section-head">
+      <div>
+        <h2>日程しおり</h2>
+        <p class="section-sub">確定分と未定分。ドイツ国内の行程は決まり次第この枠に書き足してください。</p>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="day">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.22 (火)</span>
+            <span class="day-title">東京入り・前泊</span>
+            <span class="tag done">確定</span>
+          </div>
+          <div class="day-body"><p>新幹線で東京へ移動。空港アクセスの良いホテルに前泊。</p></div>
+        </div>
+      </div>
+
+      <div class="day">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.23 (水)</span>
+            <span class="day-title">出国 — HND → FRA</span>
+            <span class="tag done">確定</span>
+          </div>
+          <div class="day-body"><p>羽田空港発、フランクフルト着。到着後の宿泊先は<span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.24 (木)</span>
+            <span class="day-title">ドイツ 1日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.25 (金)</span>
+            <span class="day-title">ドイツ 2日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.26 (土)</span>
+            <span class="day-title">ドイツ 3日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.27 (日)</span>
+            <span class="day-title">ドイツ 4日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.28 (月)</span>
+            <span class="day-title">ドイツ 5日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day tbd">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.29 (火)</span>
+            <span class="day-title">ドイツ 6日目</span>
+            <span class="tag tbd">未定</span>
+          </div>
+          <div class="day-body"><p>都市: <span class="fill"></span> ／ 行程: <span class="fill"></span></p></div>
+        </div>
+      </div>
+
+      <div class="day">
+        <div class="day-card">
+          <div class="day-top">
+            <span class="day-date">09.30 (水)</span>
+            <span class="day-title">帰国 — FRA 発</span>
+            <span class="tag done">目安</span>
+          </div>
+          <div class="day-body"><p>フランクフルト発。時差の関係で日本到着は 10/1(木) 頃を想定 — フライト確定後に要確認。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="info">
+    <div class="section-head">
+      <div>
+        <h2>ドイツ現地情報</h2>
+        <p class="section-sub">出発前の確認用クイックリファレンス。</p>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <p class="k">Currency</p>
+        <p class="v">ユーロ (EUR)</p>
+        <p class="d">カード払いが主流だが、屋台やチップ用に少額紙幣・コインもあると便利。</p>
+      </div>
+      <div class="info-card">
+        <p class="k">Power</p>
+        <p class="v">Type F ・ 230V/50Hz</p>
+        <p class="d">日本は Type A/100V のため変換プラグが必須。多くのUSB充電器は230V対応済みだが要確認。</p>
+      </div>
+      <div class="info-card">
+        <p class="k">Time Zone</p>
+        <p class="v">日本より -7時間</p>
+        <p class="d">9月末はサマータイム(CEST)期間中のため-7時間(10月最終日曜以降は-8時間)。</p>
+      </div>
+      <div class="info-card">
+        <p class="k">Emergency</p>
+        <p class="v">112</p>
+        <p class="d">警察・救急・消防共通の緊急番号(EU全域)。</p>
+      </div>
+      <div class="info-card">
+        <p class="k">Tipping</p>
+        <p class="v">端数切り上げ 5〜10%</p>
+        <p class="d">レストランや会計時に端数を切り上げる程度が一般的。会計時に伝える。</p>
+      </div>
+      <div class="info-card">
+        <p class="k">Transport</p>
+        <p class="v">ドイツ鉄道 (DB)</p>
+        <p class="d">遅延・運休が珍しくないため乗り継ぎに余裕を。チケットは乗車前の刻印/バリデートを忘れずに。</p>
+      </div>
+      <div class="info-card" style="grid-column: span 2;">
+        <p class="k">Useful Phrases</p>
+        <div class="phrase-list">
+          <div><b>Danke</b><span>ありがとう</span></div>
+          <div><b>Bitte</b><span>どうぞ / お願いします</span></div>
+          <div><b>Entschuldigung</b><span>すみません</span></div>
+          <div><b>Wo ist …?</b><span>…はどこですか</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>作成 2026-07-28 ・ 行程が確定したら書き足してください</span>
+    <button id="resetBtn" type="button">チェックをリセット</button>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var STORAGE_KEY = 'de-trip-checklist-v1';
+    var state = {};
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { state = {}; }
+
+    var allChecks = Array.prototype.slice.call(document.querySelectorAll('.item input[type="checkbox"]'));
+
+    function updateCatCount(cat) {
+      var boxes = cat.querySelectorAll('input[type="checkbox"]');
+      var checked = cat.querySelectorAll('input[type="checkbox"]:checked').length;
+      cat.querySelector('.cat-count').textContent = checked + ' / ' + boxes.length;
+    }
+
+    function updateTotal() {
+      var checked = document.querySelectorAll('.item input[type="checkbox"]:checked').length;
+      var total = allChecks.length;
+      document.getElementById('totalCount').textContent = checked + ' / ' + total;
+      document.getElementById('totalBar').style.width = (total ? (checked / total * 100) : 0) + '%';
+    }
+
+    function refreshAll() {
+      document.querySelectorAll('.cat').forEach(updateCatCount);
+      updateTotal();
+    }
+
+    allChecks.forEach(function (box) {
+      if (state[box.id]) box.checked = true;
+      box.addEventListener('change', function () {
+        state[box.id] = box.checked;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        refreshAll();
+      });
+    });
+    refreshAll();
+
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      allChecks.forEach(function (box) { box.checked = false; });
+      state = {};
+      localStorage.removeItem(STORAGE_KEY);
+      refreshAll();
+    });
+
+    // nav active state
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('nav.tabs a'));
+    var sections = tabs.map(function (t) { return document.querySelector(t.getAttribute('href')); });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var idx = sections.indexOf(entry.target);
+          tabs.forEach(function (t) { t.classList.remove('active'); });
+          if (idx > -1) tabs[idx].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+    sections.forEach(function (s) { if (s) io.observe(s); });
+  })();
+</script>
